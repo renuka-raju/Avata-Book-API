@@ -19,11 +19,11 @@ API end points
 
 Run AssestmentApplication.java and view the results in your browser on http://localhost:8080/
 
-eg: http://localhost:8080/api/book/keyword/50/50/50
-	http://localhost:8080/api/book/similarity/2/10
-	http://localhost:8080/api/book/29/40
+eg: http://localhost:8080/api/book/keyword/50/50/50 <br/>
+    http://localhost:8080/api/book/similarity/2/10 <br/>
+    http://localhost:8080/api/book/29/40 <br/>
 
-Top keywords are computed using Term Frequency-Inverse Document Frequency values for each word in the summary
+Top keywords are computed using Term Frequency-Inverse Document Frequency values for each word in the summary <br/>
 Title similarities scores computed as Jaccard Similarity[title]*100 
 
 
