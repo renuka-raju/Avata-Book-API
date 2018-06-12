@@ -8,13 +8,13 @@ As new responses arrive, the responses for the older timestamps are removed limi
 
 API end points
 
-1. To get the top X books based on their review ratings for the epoch of counter N
+1. To get the top X books based on their review ratings for the epoch of counter N <br/>
 /api/book/{epoch}/{topx}
 
-2. To get the title similarities of the top X books for a given N
+2. To get the title similarities of the top X books for a given N <br/>
 /api/book/similarity/{epoch}/{topx}
 
-3. To get the top 'a' keywords in the summary of the top X books for given N
+3. To get the top 'a' keywords in the summary of the top X books for given N <br/>
 /api/book/keyword/{epoch}/{topx}/{noofkeywords}
 
 Run AssestmentApplication.java and view the results in your browser on http://localhost:8080/
