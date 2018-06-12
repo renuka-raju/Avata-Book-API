@@ -6,8 +6,10 @@ import java.util.*;
 
 public class InMemoryStorage {
     private static InMemoryStorage inMemoryStorage;
-    public static Map<Long,List<Book>> booksmap=new TreeMap<>();
+    private int capacity;
+    private static Map<Long,List<Book>> booksmap=new TreeMap<>();//order by key - timestamp
     private static BooksAction booksaction;
+
     public static synchronized InMemoryStorage getInstance() {
         if(inMemoryStorage==null){
             inMemoryStorage=new InMemoryStorage();
@@ -15,8 +17,9 @@ public class InMemoryStorage {
         }
         return inMemoryStorage;
     }
+
     public void saveBooksMap(List<Book> books, long time){
-        if(booksmap.size()<50) {
+        if(booksmap.size()<capacity) {
             booksmap.put(time, books);
         }
         else{
@@ -27,7 +30,15 @@ public class InMemoryStorage {
             booksmap.put(time,books);
         }
         booksaction.calculateTopXBooks(time,books);
-        System.out.println(booksmap.size());
+        System.out.println("We have book lists for "+ booksmap.size() +" timestamps behind from the current time");
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 
     public static Map<Long, List<Book>> getBooksmap() {

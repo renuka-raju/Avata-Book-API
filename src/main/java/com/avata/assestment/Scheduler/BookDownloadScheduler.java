@@ -25,6 +25,7 @@ public class BookDownloadScheduler {
         ObjectMapper objectMapper = new ObjectMapper();
         String json=strjson.substring(0,strjson.length()-1);
         //System.out.println(json);
+        //JSON String to List conversion
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         TypeReference<List<Book>> mapType = new TypeReference<List<Book>>() {};
         List<Book> jsonToBookList = null;
@@ -35,7 +36,7 @@ public class BookDownloadScheduler {
         }
         //System.out.println(jsonToBookList.size());
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        InMemoryStorage.getInstance().setCapacity(50);
         InMemoryStorage.getInstance().saveBooksMap(jsonToBookList,timestamp.getTime());
     }
-
 }

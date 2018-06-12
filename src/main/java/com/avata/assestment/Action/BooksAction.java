@@ -1,18 +1,24 @@
 package com.avata.assestment.Action;
 
+import com.avata.assestment.CacheLayer.InMemoryStorage;
 import com.avata.assestment.Resources.Book;
 import com.avata.assestment.Utils.TFIDFCalculator;
 import org.apache.commons.text.similarity.JaccardSimilarity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.*;
 
+@Component
 public class BooksAction implements BooksInterface{
 
+    @Autowired
     public static Map<Long,List<Book>> topXbooksMap=new HashMap<>();
 
     @Override
     public void calculateTopXBooks(Long time, List<Book> books) {
         List<Book> list = new ArrayList<>(books);
-        List<Book> maxsizelist = list.subList(0,50);
+        List<Book> maxsizelist = list.subList(0, InMemoryStorage.getInstance().getCapacity());
         Collections.sort(maxsizelist);
         topXbooksMap.put(time,maxsizelist);
     }
@@ -23,9 +29,8 @@ public class BooksAction implements BooksInterface{
         long[] startend = calculateEpochFromCounter(t);
         //System.out.println("Epoch for t = "+t+" is : "+startend[0]+" "+startend[1]);
         for(long time: topXbooksMap.keySet()){
-            //System.out.println("we have : "+ time);
             if(time>=startend[0]&&time<startend[1]){
-                System.out.println("Got it : the epoch we need is : "+time);
+                System.out.println("Fetching the top X books for the epoch starting from : "+time);
                 booklist=topXbooksMap.get(time);
                 break;
             }
@@ -64,12 +69,14 @@ public class BooksAction implements BooksInterface{
     public Map<String,Integer> getTitleSimilarityScore(int t, int x) {
         List<String> titles=getTopXBookTitles(t,x);
         Set<String> goldenfeatureset=new HashSet<>();
+        //Making a golden feature set using all the titles
+        //and computing the Jaccard similarity of each title with the golden set
         if(titles!=null) {
             for (String title : titles) {
                 goldenfeatureset.add(title);
             }
             String goldenfeature=goldenfeatureset.toString();
-            System.out.println(goldenfeature);
+            //System.out.println(goldenfeature);
             JaccardSimilarity js = new JaccardSimilarity();
             Map<String, Integer> similarityscores = new HashMap<>();
             for (String title : titles) {
@@ -77,6 +84,7 @@ public class BooksAction implements BooksInterface{
                 //System.out.println(title + ":" + score);
                 similarityscores.put(title, score);
             }
+            System.out.println("Fetching the title similarity scores(commputed using Jaccard Similarity) of the top X books for the epoch starting from : "+t);
             return similarityscores;
         }
         return null;
@@ -88,6 +96,8 @@ public class BooksAction implements BooksInterface{
         Set<String> completed=new HashSet<>();
         Map<String,Double> tfidfscores=new HashMap<>();
         TFIDFCalculator calculator=new TFIDFCalculator();
+        //Calculating the tf-idf of all the words in every summary excluding the stop words
+        //to identify the importance of a word in a document
         for(String summary : summaries) {
             String[] wordbag = summary.split(" ");
             for (String word : wordbag) {
@@ -98,8 +108,10 @@ public class BooksAction implements BooksInterface{
                 completed.add(word);
             }
         }
+        //Key words are sorted descendingly based on theri tf-idf values and the top 'num' keywords returned
         List<String> topkeywords=getKeywordsBasedOnScores(tfidfscores);
         if(topkeywords!=null){
+            System.out.println("Fetching the top "+num+" keywords computed using tf-idf weights of terms in summary of top X books for the epoch starting from : "+t);
             return topkeywords.subList(0,num);
         }
         return null;
@@ -107,7 +119,7 @@ public class BooksAction implements BooksInterface{
 
     public long[] calculateEpochFromCounter(int t){
         long now = System.currentTimeMillis();
-        System.out.println("now :"+now);
+        //System.out.println("now :"+now);
         int sec = 4000*t;
         long end=now-sec;
         long start=end-4000;
