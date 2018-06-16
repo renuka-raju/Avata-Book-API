@@ -18,8 +18,8 @@ public class BooksAction implements BooksInterface{
     @Override
     public void calculateTopXBooks(Long time, List<Book> books) {
         List<Book> list = new ArrayList<>(books);
+        Collections.sort(list);
         List<Book> maxsizelist = list.subList(0, InMemoryStorage.getInstance().getCapacity());
-        Collections.sort(maxsizelist);
         topXbooksMap.put(time,maxsizelist);
     }
 
